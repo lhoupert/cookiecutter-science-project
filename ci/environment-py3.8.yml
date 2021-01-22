@@ -1,0 +1,5 @@
+name: test_env_cookiecutter_science_project
+dependencies:
+- cookiecutter
+- pytest
+- setuptools_scm

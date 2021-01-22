@@ -1,3 +1,6 @@
+[![Build Status](https://img.shields.io/github/workflow/status/jbusecke/cookiecutter-science-project/CI?logo=github)](https://github.com/jbusecke/cookiecutter-science-project/actions)
+[![DOI](https://zenodo.org/badge/169483949.svg)](https://zenodo.org/badge/latestdoi/169483949)
+
 # Cookiecutter Science Project
 
 ---------------
@@ -9,12 +12,13 @@ If you want to start a science project fast, but still encourage good coding pra
 
 You have just started with python and learning all the great elements of the stack seems overwhelming? Just follow the quickstart guide and have everything set up to 'level up' seamlessly along the way.
 
-An example repository can be found [here](https://github.com/jbusecke/project_name)
+This will enable you to setup a repository like [this](https://github.com/jbusecke/cookiecutter-science-project_demo_repo) in minutes, and you can go right back to populating it with amazing science!
 
 This work is modified from [cookiecutter-data-science](https://drivendata.github.io/cookiecutter-data-science/) with some modifications targeted towards earth scientist, but general enough for other fields aswell.
 
-### Requirements to use the cookiecutter template:
+## Requirements to use the cookiecutter template:
  - A [github](https://github.com/) account.
+   - Note that your account must be set up for [authentication via SSH key-pair](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh) before initializing repositories using cookiecutter.
  - [Conda package manager](https://conda.io/en/latest/)
  - [Cookiecutter Python package](http://cookiecutter.readthedocs.org/en/latest/installation.html)
 
@@ -24,9 +28,7 @@ You can install [Cookiecutter Python package](http://cookiecutter.readthedocs.or
 $ conda install -c conda-forge cookiecutter
 ```
 
-
-
-### Quickstart
+## Quickstart
 To start a new project, run:
 ``` bash
 $ cookiecutter https://github.com/jbusecke/cookiecutter-science-project
@@ -36,7 +38,6 @@ $ cookiecutter https://github.com/jbusecke/cookiecutter-science-project
 If you have previously created a package with this template confirm the prompt to redownload the newest version.
 The installation dialog will ask for a few inputs:
 - `project_name`: The name of the project. This will be used as package name and repository name on github for consistency (whitespaces will be replaced with underscores).
-- `repo_private`: Chose between a private (`true`) or public (`false`) github repository. Be aware that some of the steps below differ for private and public repositories.
 - `author_name`: Your name.
 - `github_username`: Your username for [github](https://github.com).
 - `description`: A short description of the project for the readme.
@@ -44,14 +45,27 @@ The installation dialog will ask for a few inputs:
 - `python_interpreter`: Chose your python version. In most cases just press enter to chose python 3.
 > Unfortunately there seems to be a bug that does [not allow backspace](https://github.com/audreyr/cookiecutter/issues/875) in cookiecutter on certain platforms. If you make a typo cancel the input `ctrl+c` and start over again.
 
-The directory includes a simple setup script, which will create a github repository and commit the current state as initial commit.
+### Setting up git/github
 
-In the directory created by cookiecutter do
-
-```bash
-$ ./scripts/setup.sh
+To initialize a git repository in the folder, navigate to your project folder that was just created and do
 ```
-The script will prompt your github password to create the repository in your account.
+git init
+```
+
+We now want to connect this local repository to a github repo. This can be done directly from the command line using the [Github Command Line Interface](https://github.com/cli/cli#installation). You will have to install it following one of the methods described [here](https://github.com/cli/cli#installation)
+
+Now (from the project root folder) you can simply do:
+```shell
+gh repo create 
+```
+and follow the instructions. You might have to authenticate this if you are using it for the first time, but this should all be explained by prompts in the command line. 
+
+> Hint: If you want your repository to be private, you can simply do `gh repo create --private` instead of selecting it from the prompts.
+
+Now all you need to do is commit the files and push them (the remote has already been set by the previous command).
+
+
+### Configuring the conda environment
 
 Now configure the packages you will need (you can add more later) in the 'environment.yml' file and create a conda environment
 
@@ -63,11 +77,63 @@ That's it for the setup. You can now go ahead and start your scientific analysis
 
 ```
 cd project_name
-conda activate project_name
+conda activate <project_name>
 jupyter-lab
 ```
 
-### Organization and additional features
+## How to release your package
+
+To make your software accessible for others you want to package and release it so others can install
+it easily. The most common ways to install python packages are [pypi]() and [conda]().
+
+### Pypi
+Releasing on pypi is already built into the CI. You only have to follow these 4 simple steps:
+1. Get an account on [pypi](https://pypi.org)
+2. Enter your username and passwords in the Settings > Secrets Menu of your repository. They need to be named `PIPY_USERNAME` and `PIPY_PASSWORD` respectively (watch the spelling!)
+3. Fill out the `classifiers` and `install_requires` fields in `setup.cfg`. This will ensure that any dependencies are installed when your package is installed, and your stuff works right out of the box.
+4. Release a new version by clicking on `Releases` in the right sidebar and then `Draft a new release`. 
+Thats it! For each new version step 4 is all you need to do to publish!
+
+Now you can install your released version of your package with
+```
+pip install <yourpackagename>
+```
+
+### conda
+Instructions coming soon.
+
+## Documentation
+The template comes with a fully set up documentation and examples. You can test the docs locally by building the docs conda environment 
+```
+conda env create -f docs/environment.yml
+```
+Then activate the environment and navigate to the `docs` folder and build the html documentation
+```
+make html
+```
+Finally you can open the documentation with
+```
+open _build/html/index.html
+```
+
+### ReadTheDocs - Documentation built into the CI
+To enable that the docs are being built for each release, just head over to [ReadTheDocs](https://readthedocs.org/), link your account with github and link your repository. The only option you need to enable is in `Admin`>`Advanced Settings`>`Default Settings`>`Install Project`.
+<!-- https://stackoverflow.com/questions/61163378/readthedocs-sphinx-setuptools-scm-how-to -->
+Thats it! Everything else will just work. 
+> If you want to have a new version of your docs built for each submitted PR (very helpful when working on the docs themselves), navigate to the project and click `Admin`>`Advanced Settings`>`Build pull requests for this project`.
+
+
+## Optional "nice to have" features
+
+### Code linting
+
+Coming soon
+
+
+
+
+
+## Organization and additional features
 
 Your `project_name` folder should look like this:
 
@@ -78,9 +144,6 @@ Your `project_name` folder should look like this:
 ├── environment.yml       <- Conda environment file. Create environment with
 │                           `conda env create -f environment.yml`
 ├── .travis.yml           <- Config file for Travis CI
-├── .stickler.yml         <- Config file for Stickler
-├── scripts              
-│   └── setup.sh          <- Shell script to initialize new project.
 │
 ├── references            <- Data dictionaries, manuals, and all other explanatory materials.
 │
@@ -111,7 +174,7 @@ Head over to [cookiecutter-data-science](https://drivendata.github.io/cookiecutt
 Keeping all the elements of your project contained in this structure ensures that you can port the project from your laptop to a cluster or share it easily with other people.
 
 #### Version control with git
-The setup has already created a matching github repository([example based on this readme](https://github.com/jbusecke/project_name)) to your local project folder to get you started.
+The setup has already created a matching github repository([example based on this readme](https://github.com/jbusecke/cookiecutter-science-project_demo_repo)) to your local project folder to get you started.
 Just add, commit and push any changes you make regularly to have a backed up history of your project.  
 
 #### `data` folder
@@ -196,3 +259,13 @@ If you have suggestions, feel free to raise an issue or submit a pull request.
 Until then SCIENCE ON!
 
 ![](https://media.giphy.com/media/LXr2Uxk2xUO2I/giphy.gif)
+
+
+## Developer notes
+
+The template has some rudimentary tests, but in order to test a PR/branch in a real world scenario, I currently submit the PR and then check out the corresponding branch with:
+```shell
+cookiecutter https://github.com/jbusecke/cookiecutter-science-project --checkout <pr_branch>
+```
+
+That way I can test the full workflow including setting up a github repo and pushing to there.
